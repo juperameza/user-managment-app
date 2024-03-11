@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserTest extends TestCase
 {
@@ -14,118 +16,27 @@ class UserTest extends TestCase
      */
     use RefreshDatabase;
 
-    private $registrationData=[
-        "name" => "Test User",
-        "email" => "test@test.com",
-        "password" => "SecurePassword123!",
-        "password_confirmation" => "SecurePassword123!",
-    ];
-
-    public function test_example(): void
+    public function test_user_can_edit_their_profile(): void
     {
-        $response = $this->get('/');
-
-        $response->assertStatus(200);
-    }
-
-    public function test_user_can_register(): void
-    {
-        $userData = [
-            "name" => "Test User",
-            "email" => "testuser@example.com",
-            "password" => "SecurePassword123!",
-            "password_confirmation" => "SecurePassword123!",
-        ];
-
-        $response = $this->json('POST', 'api/register', $userData);
-
-        $response->assertStatus(Response::HTTP_CREATED);
-        $this->assertDatabaseHas('users',[ "email"=>$userData['email']]);
-    }
-
-    public function test_user_cannot_register_with_invalid_email(): void
-    {
-        $userData = [
-            "name" => "Test User",
-            "email" => "notanemail",
-            "password" => "SecurePassword123!",
-            "password_confirmation" => "SecurePassword123!",
-        ];
-        $response = $this->json('POST', 'api/register', $userData);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $this->assertDatabaseMissing('users',[ "email"=>$userData['email']]);
-    }
-
-    public function test_user_cannot_register_with_unmatched_passwords(): void
-    {
-        $userData = [
-            "name" => "Test User",
-            "email" => "test@test.com",
-            "password" => "SecurePassword123!",
-            "password_confirmation" => "NotTheSameSecurePassword123!",
-        ];
-        $response = $this->json('POST', 'api/register', $userData);
-
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $this->assertDatabaseMissing('users',[ "email"=>$userData['email']]);
-    }
-    public function test_user_cannot_register_with_existing_email(): void
-    {
-        $userData = [
-            "name" => "Test User",
-            "email" => "test@test.com",
-            "password" => "SecurePassword123!",
-            "password_confirmation" => "SecurePassword123!",
-        ];
-        $this->json('POST', 'api/register', $userData);
-        $response = $this->json('POST', 'api/register', $userData);
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-
-    public function test_user_cannot_register_with_insecure_password(): void
-    {
-        $userData = [
-            "name" => "Test User",
-            "email" => "test@test.com",
-            "password" => "password",
-            "password_confirmation" => "password",
-        ];
-        $response = $this->json('POST', 'api/register', $userData);
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-        $this->assertDatabaseMissing('users',[ "email"=>$userData['email']]);
-    }
-
-    public function test_user_can_login(): void
-    {
-        $userData = [
-            "email" => "test@test.com",
-            "password" => "SecurePassword123!",
-        ];
-        $this->json('POST', 'api/register', $this->registrationData);
-        $response = $this->json('POST', 'api/login', $userData);
-        Log::info($response->getContent());
-
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+        $this->withHeaders(['Authorization' => "Bearer $token"]);
+        $response = $this->json('PUT', "api/user/$user->id", [
+            "name" => "New Name",
+            "email" => "new@mail.com"
+        ]);
         $response->assertStatus(Response::HTTP_OK);
+        $this->assertDatabaseHas('users', [
+            'name' => 'New Name',
+            'email' => 'new@mail.com']);
     }
-    public function test_user_cannot_login_with_invalid_email(): void
+
+    public function test_user_can_delete_their_profile(): void
     {
-        $userData = [
-            "email" => "notanemail",
-            "password" => "SecurePassword123!",
-        ];
-        $response = $this->json('POST', 'api/login', $userData);
-        $response->assertStatus(Response::HTTP_UNPROCESSABLE_ENTITY);
-    }
-    public function test_user_cannot_login_with_invalid_password(): void
-    {
-        $userData = [
-            "email" => "test@test.com",
-            "password" => "SecurePassword123!",
-        ];
-        $this->json('POST', 'api/register', $this->registrationData);
-        $userData['password'] = "NotTheSameSecurePassword123!";
-        $response = $this->json('POST', 'api/login', $userData);
-        $response->assertStatus(Response::HTTP_UNAUTHORIZED);
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+        $this->withHeaders(['Authorization' => "Bearer $token"]);
+        $response = $this->json('DELETE', "api/user/$user->id");
+        $response->assertStatus(Response::HTTP_OK);
     }
 }

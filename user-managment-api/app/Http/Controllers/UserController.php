@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegistrationRequest;
+use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -40,5 +41,19 @@ class UserController extends Controller
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
+    }
+
+    public function edit(UserRequest $request, $id)
+    {
+        $user = User::find($id);
+        $user->update($request->all());
+        return response()->json($user);
+    }
+
+    public function delete($id)
+    {
+        $user = User::find($id);
+        User::destroy($id);
+        return response()->json(["meesage"=>"User $user->name deleted"] , 200);
     }
 }
