@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -18,18 +19,8 @@ use Illuminate\Support\Facades\Hash;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::post('/register', [UserController::class, 'registration']);
+Route::post('/login', [UserController::class, 'login']);
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
-});
-
-Route::post('/login', function (Request $request) {
-    $user = User::where('email', $request->email)->first();
-
-    if ($user && Hash::check($request->password, $user->password)) {
-        return $user->createToken($request->name);
-    }
-
-    return response()->json([
-        'message' => 'Invalid credentials'
-    ], 401);
 });
