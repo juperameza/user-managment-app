@@ -39,4 +39,13 @@ class UserTest extends TestCase
         $response = $this->json('DELETE', "api/user/$user->id");
         $response->assertStatus(Response::HTTP_OK);
     }
+
+    public function test_all_users_can_be_retrieved(): void
+    {
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
+        $this->withHeaders(['Authorization' => "Bearer $token"]);
+        $response = $this->json('GET', "api/user");
+        $response->assertStatus(Response::HTTP_OK);
+    }
 }

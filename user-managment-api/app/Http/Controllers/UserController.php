@@ -56,4 +56,9 @@ class UserController extends Controller
         User::destroy($id);
         return response()->json(["meesage"=>"User $user->name deleted"] , 200);
     }
+
+    public function index()
+    {
+        return response()->json(User::all());
+    }
 }
