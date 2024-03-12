@@ -28,7 +28,7 @@ class UserTest extends TestCase
         $token = JWTAuth::fromUser($user);
 
         $this->withHeaders(['Authorization' => "Bearer $token"]);
-        $response = $this->json('PATCH', "api/user/$user->id", [
+        $response = $this->json('PATCH', "api/users/$user->id", [
             "name" => "New Name",
             "email" => "new@mail.com"
         ]);
@@ -43,7 +43,7 @@ class UserTest extends TestCase
         $user = User::first();
         $token = JWTAuth::fromUser($user);
         $this->withHeaders(['Authorization' => "Bearer $token"]);
-        $response = $this->json('PATCH', "api/user/{$user->id}", [
+        $response = $this->json('PATCH', "api/users/{$user->id}", [
             "name" => "New Name",
             "email" => $user->email
         ]);
@@ -57,7 +57,7 @@ class UserTest extends TestCase
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
         $this->withHeaders(['Authorization' => "Bearer $token"]);
-        $response = $this->json('DELETE', "api/user/$user->id");
+        $response = $this->json('DELETE', "api/users/$user->id");
         $response->assertStatus(Response::HTTP_OK);
     }
 
@@ -66,7 +66,7 @@ class UserTest extends TestCase
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
         $this->withHeaders(['Authorization' => "Bearer $token"]);
-        $response = $this->json('GET', "api/user");
+        $response = $this->json('GET', "api/users");
         $response->assertStatus(Response::HTTP_OK);
     }
 }

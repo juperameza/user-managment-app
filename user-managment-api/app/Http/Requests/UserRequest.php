@@ -24,7 +24,7 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $user = $this->route('id'); // Assuming you have a user ID in the route parameter
+        $user = $this->route('user'); // Assuming you have a user ID in the route parameter
         return [
             'name' => 'string|max:255',
             'email' => [

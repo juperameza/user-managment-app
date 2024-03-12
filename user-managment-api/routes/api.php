@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,11 +20,8 @@ use Illuminate\Support\Facades\Hash;
 |
 */
 
-Route::post('/register', [UserController::class, 'registration']);
-Route::post('/login', [UserController::class, 'login']);
+Route::post('/register', [AuthController::class, 'registration']);
+Route::post('/login', [AuthController::class, 'login']);
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::patch('/user/{id}', [UserController::class, 'edit']);
-    Route::delete('/user/{id}', [UserController::class, 'delete']);
-    Route::get('/user', [UserController::class, 'index']);
-    Route::get('/user/{id}', [UserController::class, 'show']);
+    Route::apiResource('users', UserController::class);
 });
