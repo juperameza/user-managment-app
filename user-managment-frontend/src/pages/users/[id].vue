@@ -9,7 +9,7 @@ const id = route.params.id;
 const userData = ref({});
 const getUser = async () => {
   try {
-    const response = await axios.get(`api/user/${id}`, {
+    const response = await axios.get(`api/users/${id}`, {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,

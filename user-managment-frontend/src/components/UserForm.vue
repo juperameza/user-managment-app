@@ -125,7 +125,7 @@ const submit = handleSubmit((values) => {
   } else if (props.mode === "edit") {
     // Edit code
     axios
-      .patch(`api/user/${props.userData.id}`, values, {
+      .patch(`api/users/${props.userData.id}`, values, {
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,

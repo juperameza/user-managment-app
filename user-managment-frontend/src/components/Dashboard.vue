@@ -21,7 +21,7 @@ const data = ref(null);
 const route = useRouter();
 onMounted(() => {
   axios
-    .get("api/user", {
+    .get("api/users", {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
