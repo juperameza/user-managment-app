@@ -15,13 +15,20 @@ class UserTest extends TestCase
      * A basic feature test example.
      */
     use RefreshDatabase;
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seed();
+    }
 
     public function test_user_can_edit_their_profile(): void
     {
         $user = User::factory()->create();
         $token = JWTAuth::fromUser($user);
+
         $this->withHeaders(['Authorization' => "Bearer $token"]);
-        $response = $this->json('PUT', "api/user/$user->id", [
+        $response = $this->json('PATCH', "api/user/$user->id", [
             "name" => "New Name",
             "email" => "new@mail.com"
         ]);
@@ -29,6 +36,20 @@ class UserTest extends TestCase
         $this->assertDatabaseHas('users', [
             'name' => 'New Name',
             'email' => 'new@mail.com']);
+    }
+
+    public function test_user_can_edit_only_one_attribute_of_their_profile(): void
+    {
+        $user = User::first();
+        $token = JWTAuth::fromUser($user);
+        $this->withHeaders(['Authorization' => "Bearer $token"]);
+        $response = $this->json('PATCH', "api/user/{$user->id}", [
+            "name" => "New Name",
+            "email" => $user->email
+        ]);
+        $response->assertStatus(Response::HTTP_OK);
+        $this->assertDatabaseHas('users', [
+            'name' => 'New Name']);
     }
 
     public function test_user_can_delete_their_profile(): void

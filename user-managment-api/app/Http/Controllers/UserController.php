@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\RegistrationRequest;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
@@ -45,6 +46,7 @@ class UserController extends Controller
 
     public function edit(UserRequest $request, $id)
     {
+        Log::info('id from controller'.$id);
         $user = User::find($id);
         $user->update($request->all());
         return response()->json($user);
@@ -60,5 +62,10 @@ class UserController extends Controller
     public function index()
     {
         return response()->json(User::all());
+    }
+
+    public function show($id)
+    {
+        return response()->json(User::find($id));
     }
 }

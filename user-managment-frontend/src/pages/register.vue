@@ -1,5 +1,5 @@
 <template>
-  <SignUp />
+  <UserForm mode="signup" />
 </template>
 
 <script lang="ts" setup>

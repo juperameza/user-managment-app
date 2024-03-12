@@ -2,7 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
 {
@@ -21,9 +24,14 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->route('id'); // Assuming you have a user ID in the route parameter
         return [
             'name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users',
+            'email' => [
+                'required',
+                'email',
+                Rule::unique('users')->ignore($user),
+            ],
             'password' => ['string', 'min:8', 'confirmed'],
         ];
     }

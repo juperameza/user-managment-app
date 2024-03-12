@@ -33,6 +33,7 @@
 import { ref } from "vue";
 import { useField, useForm } from "vee-validate";
 import axios from "axios";
+import { useRouter } from "vue-router";
 const { handleSubmit } = useForm({
   validationSchema: {
     email(value) {
@@ -51,12 +52,14 @@ const { handleSubmit } = useForm({
 const email = useField("email");
 const password = useField("password");
 const loginError = ref("");
+const router = useRouter();
 const submit = handleSubmit((values) => {
   axios
     .post("api/login", values)
     .then((res) => {
       if (res.status === 200) {
         localStorage.setItem("token", res.data.access_token);
+        router.push("/");
       }
     })
     .catch((err) => {
